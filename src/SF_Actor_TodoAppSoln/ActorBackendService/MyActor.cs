@@ -21,10 +21,9 @@ namespace ActorBackendService
     ///  - None: State is kept in memory only and not replicated.
     /// </remarks>
     [StatePersistence(StatePersistence.Persisted)]
-    internal class MyActor : Actor, IMyActor, IRemindable
+    internal class MyActor : Actor, IMyActor
     {
-        private const string ReminderName = "Reminder";
-        private const string StateName = "Count";
+        private const string StateName = "Todo";
 
         /// <summary>
         /// Initializes a new instance of ActorBackendService
@@ -40,9 +39,9 @@ namespace ActorBackendService
         {
             try
             {
-                this.GetReminder(ReminderName);
-            
-                bool added = await this.StateManager.TryAddStateAsync<long>(StateName, 0);
+                bool added = await this.StateManager.TryAddStateAsync<string>(StateName, "Default Todo");
+
+                string todo = await this.StateManager.GetStateAsync<string>(StateName);
 
                 if (!added)
                 {
@@ -50,22 +49,38 @@ namespace ActorBackendService
                     throw new InvalidOperationException("Processing for this actor has already started.");
                 }
             }
-            catch (ReminderNotFoundException)
+            catch (Exception)
             {
-                await this.RegisterReminderAsync(ReminderName, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(10));
             }
         }
 
-        public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan dueTime, TimeSpan period)
+        public async Task<string> SendTodoAsync()
         {
-            if (reminderName.Equals(ReminderName, StringComparison.OrdinalIgnoreCase))
+            try
             {
-                long currentValue = await this.StateManager.GetStateAsync<long>(StateName);
+                string result = await this.StateManager.AddOrUpdateStateAsync<string>(StateName, "My Todo", (k, oldVal) =>
+                {
+                    return oldVal.Equals("Default Todo") ? "My Todo" : "oldVal not DefaultTodo!";
+                });
 
-                ActorEventSource.Current.ActorMessage(this, $"Processing. Current value: {currentValue}");
+                string todo = await this.StateManager.GetStateAsync<string>(StateName);
 
-                await this.StateManager.SetStateAsync<long>(StateName, ++currentValue);
+                return todo;
             }
+            catch (Exception)
+            {
+            }
+
+            return "HM_Exception";
+        }
+
+        public async Task<string> ReceiveTodoAsync()
+        {
+            string todo = await this.StateManager.GetStateAsync<string>(StateName);
+
+            ActorEventSource.Current.ActorMessage(this, $"Processing Todo. Current value: {todo}");
+
+            return todo;
         }
 
         /// <summary>

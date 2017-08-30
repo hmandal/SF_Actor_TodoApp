@@ -15,7 +15,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
     <ProjectReference Include="..\ActorBackendService.Interfaces\ActorBackendService.Interfaces.csproj" />
-    <ProjectReference Include="..\StatelessBackendService.Interfaces\StatelessBackendService.Interfaces.csproj" />
   </ItemGroup>
 
   <ItemGroup>

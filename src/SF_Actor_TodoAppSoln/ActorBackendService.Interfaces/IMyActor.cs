@@ -21,5 +21,9 @@ namespace ActorBackendService.Interfaces
         /// <param name="count"></param>
         /// <returns></returns>
         Task StartProcessingAsync(CancellationToken cancellationToken);
+
+        Task<string> SendTodoAsync();
+
+        Task<string> ReceiveTodoAsync();
     }
 }

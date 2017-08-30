@@ -101,7 +101,7 @@ function getActorCount() {
             if (http.status < 400) {
                 returnData = JSON.parse(http.responseText);
                 if (returnData) {
-                    countDisplay.innerHTML = returnData.count;
+                    countDisplay.innerHTML = returnData.todo;
                     updateFooter(http, (end - start));
                 }
             } else {
@@ -213,7 +213,7 @@ function handleEnter() {
     switch (pathName) {
         case "Stateless":
             onkeyup = function (e) {
-                if (e.keyCode == 13) {
+                if (e.keyCode === 13) {
                     getStatelessBackendCount();
                     return false;
                 }
@@ -221,13 +221,13 @@ function handleEnter() {
             break;
         case "Stateful":
             keyInput.onkeyup = function (e) {
-                if (e.keyCode == 13) {
+                if (e.keyCode === 13) {
                     addStatefulBackendServiceKeyValuePair();
                     return false;
                 }
             };
             valueInput.onkeyup = function (e) {
-                if (e.keyCode == 13) {
+                if (e.keyCode === 13) {
                     addStatefulBackendServiceKeyValuePair();
                     return false;
                 }

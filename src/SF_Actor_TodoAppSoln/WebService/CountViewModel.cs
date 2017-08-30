@@ -5,8 +5,8 @@
 
 namespace WebService
 {
-    public class CountViewModel
+    public class TodoViewModel
     {
-        public long Count { get; set; }
+        public string Todo { get; set; }
     }
 }

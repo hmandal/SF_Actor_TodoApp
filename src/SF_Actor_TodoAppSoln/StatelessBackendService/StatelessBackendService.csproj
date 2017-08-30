@@ -92,12 +92,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\StatelessBackendService.Interfaces\StatelessBackendService.Interfaces.csproj">
-      <Project>{49e73bbd-a3fa-46f3-8314-73417c972f68}</Project>
-      <Name>StatelessBackendService.Interfaces</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

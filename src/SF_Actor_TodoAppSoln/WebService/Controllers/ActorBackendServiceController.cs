@@ -13,6 +13,7 @@ namespace WebService.Controllers
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Actors.Query;
     using System;
+    using System.Collections.Generic;
     using System.Fabric;
     using System.Fabric.Query;
     using System.Linq;
@@ -25,6 +26,7 @@ namespace WebService.Controllers
         private readonly FabricClient fabricClient;
         private readonly ConfigSettings configSettings;
         private readonly StatelessServiceContext serviceContext;
+        private ActorId actorId = new ActorId(111);
 
         public ActorBackendServiceController(StatelessServiceContext serviceContext, ConfigSettings settings, FabricClient fabricClient)
         {
@@ -38,44 +40,29 @@ namespace WebService.Controllers
         public async Task<IActionResult> GetAsync()
         {
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
+            
+            // This only creates a proxy object, it does not activate an actor or invoke any methods yet.
+            IMyActor todoActor = ActorProxy.Create<IMyActor>(actorId, new Uri(serviceUri));
 
-            ServicePartitionList partitions = await this.fabricClient.QueryManager.GetPartitionListAsync(new Uri(serviceUri));
+            string todo = await todoActor.ReceiveTodoAsync();
 
-            long count = 0;
-            foreach (Partition partition in partitions)
-            {
-                long partitionKey = ((Int64RangePartitionInformation)partition.PartitionInformation).LowKey;
-                IActorService actorServiceProxy = ActorServiceProxy.Create(new Uri(serviceUri), partitionKey);
-
-                ContinuationToken continuationToken = null;
-
-                do
-                {
-                    PagedResult<ActorInformation> page = await actorServiceProxy.GetActorsAsync(continuationToken, CancellationToken.None);
-
-                    count += page.Items.Where(x => x.IsActive).LongCount();
-
-                    continuationToken = page.ContinuationToken;
-                }
-                while (continuationToken != null);
-            }
-
-            return this.Json(new CountViewModel() { Count = count } );
+            return this.Json(new TodoViewModel() { Todo = todo });
         }
 
         // POST api/actorbackendservice
         [HttpPost]
         public async Task<IActionResult> PostAsync()
         {
-           
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
 
-            IMyActor proxy = ActorProxy.Create<IMyActor>(ActorId.CreateRandom(), new Uri(serviceUri));
+            IMyActor proxy = ActorProxy.Create<IMyActor>(actorId, new Uri(serviceUri));
 
             await proxy.StartProcessingAsync(CancellationToken.None);
+            
+            await proxy.SendTodoAsync();
 
             return this.Json(true);
-          
+
         }
     }
 }

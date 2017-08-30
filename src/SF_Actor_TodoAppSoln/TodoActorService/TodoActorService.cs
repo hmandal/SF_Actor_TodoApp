@@ -44,16 +44,16 @@ namespace TodoActorService
             // Any serializable object can be saved in the StateManager.
             // For more information, see https://aka.ms/servicefabricactorsstateserialization
 
-            return this.StateManager.TryAddStateAsync("count", 0);
+            return this.StateManager.TryAddStateAsync("todo", "Empty Todo");
         }
 
         /// <summary>
         /// TODO: Replace with your own actor method.
         /// </summary>
         /// <returns></returns>
-        Task<int> ITodoActorService.GetCountAsync(CancellationToken cancellationToken)
+        Task<string> ITodoActorService.GetTodoAsync(CancellationToken cancellationToken)
         {
-            return this.StateManager.GetStateAsync<int>("count", cancellationToken);
+            return this.StateManager.GetStateAsync<string>("todo", cancellationToken);
         }
 
         /// <summary>
@@ -61,11 +61,11 @@ namespace TodoActorService
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        Task ITodoActorService.SetCountAsync(int count, CancellationToken cancellationToken)
+        Task ITodoActorService.SetTodoAsync(string todo, CancellationToken cancellationToken)
         {
             // Requests are not guaranteed to be processed in order nor at most once.
             // The update function here verifies that the incoming count is greater than the current count to preserve order.
-            return this.StateManager.AddOrUpdateStateAsync("count", count, (key, value) => count > value ? count : value, cancellationToken);
+            return this.StateManager.AddOrUpdateStateAsync("todo", todo, (key, value) => todo.Equals("Empty Todo") ? "Write your Todo here." : value, cancellationToken);
         }
     }
 }

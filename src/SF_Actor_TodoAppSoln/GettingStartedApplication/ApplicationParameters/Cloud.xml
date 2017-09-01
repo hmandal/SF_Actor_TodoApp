@@ -3,8 +3,5 @@
   <Parameters>
     <Parameter Name="GuestExeBackendService_InstanceCount" Value="-1" />
     <Parameter Name="WebService_InstanceCount" Value="-1" />
-    <Parameter Name="MyActorService_PartitionCount" Value="9" />
-    <Parameter Name="MyActorService_TargetReplicaSetSize" Value="3" />
-    <Parameter Name="MyActorService_MinReplicaSetSize" Value="3" />
   </Parameters>
 </Application>

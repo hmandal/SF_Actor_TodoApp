@@ -46,7 +46,7 @@ namespace ActorBackendService
                 if (!added)
                 {
                     // value already exists, which means processing has already started.
-                    throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ServiceName }) has already started.");
+                    throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ImplementationType.Name }) has already started.");
                 }
             }
             catch (Exception)
@@ -60,7 +60,7 @@ namespace ActorBackendService
         /// </summary>
         protected override async Task OnActivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, $"{ this.ActorService.ActorTypeInformation.ServiceName } Actor activated.");
+            ActorEventSource.Current.ActorMessage(this, $"{ this.ActorService.ActorTypeInformation.ImplementationType.Name } Actor activated.");
 
             // The StateManager is this actor's private state store.
             // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.

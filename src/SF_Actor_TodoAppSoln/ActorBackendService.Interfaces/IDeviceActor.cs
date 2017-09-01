@@ -8,6 +8,7 @@ namespace ActorBackendService.Interfaces
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ServiceFabric.Actors;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// This interface defines the methods exposed by an actor.
@@ -95,6 +96,7 @@ namespace ActorBackendService.Interfaces
     {
     }
 
+    [DataContract]
     public class DeviceAddedInfo: IDeviceAddedInfo
     {
         public string Id { get; set; }

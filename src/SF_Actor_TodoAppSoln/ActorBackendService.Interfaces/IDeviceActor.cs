@@ -15,14 +15,15 @@ namespace ActorBackendService.Interfaces
     /// </summary>
     public interface IDeviceActor : IActor
     {
-        Task<DeviceInfoResult> GetAsync(string deviceId);
-        Task<DeviceInfoResult> AddNewAsync();
-        Task<DeviceInfoResult> RemoveAsync(string deviceId);
-        Task<DeviceInfoResult> RenameAsync(string deviceId, string newName);
-        Task<DeviceInfoResult> ToggleActivationStatusAsync(string deviceId);
+        Task<IGetDeviceInfo> GetAsync(string deviceId);
+        Task<IDeviceAddedInfo> AddNewAsync();
+        Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
+        Task<IDeviceRenamedInfo> RenameAsync(string deviceId, string newName);
+        Task<IDeviceToggledActivationStatusInfo> ToggleActivationStatusAsync(string deviceId);
+        Task StartProcessingAsync(CancellationToken none);
     }
 
-    public class DeviceInfoResult
+    public class DeviceInfoResult: IDeviceInfoResult
     {
         public DeviceErrorInfo ErrorInfo { get; set; }
 
@@ -34,6 +35,10 @@ namespace ActorBackendService.Interfaces
         {
             ErrorInfo = error;
         }
+    }
+
+    public interface IDeviceInfoResult
+    {
     }
 
     public class DeviceErrorInfo
@@ -52,10 +57,10 @@ namespace ActorBackendService.Interfaces
         }
     }
 
-    public class GetDeviceInfo : DeviceInfoResult
+    public class GetDeviceInfo : IGetDeviceInfo
     {
-        private Device AddedDevice;
-        private DeviceErrorInfo DevErrinfo;
+        public Device AddedDevice { get; set; }
+        public DeviceErrorInfo DevErrinfo { get; set; }
 
         // HMTODO: remove all usused ctors.
         public GetDeviceInfo()
@@ -68,7 +73,29 @@ namespace ActorBackendService.Interfaces
         }
     }
 
-    public class DeviceAddedInfo: DeviceErrorInfo
+    public interface IGetDeviceInfo: IDeviceInfoResult
+    {
+        Device AddedDevice { get; set; }
+        DeviceErrorInfo DevErrinfo { get; set; }
+    }
+
+    public interface IDeviceAddedInfo : IDeviceInfoResult
+    {
+    }
+
+    public interface IDeviceRemovedInfo : IDeviceInfoResult
+    {
+    }
+
+    public interface IDeviceRenamedInfo : IDeviceInfoResult
+    {
+    }
+
+    public interface IDeviceToggledActivationStatusInfo : IDeviceInfoResult
+    {
+    }
+
+    public class DeviceAddedInfo: IDeviceAddedInfo
     {
         public string Id { get; set; }
 
@@ -82,7 +109,7 @@ namespace ActorBackendService.Interfaces
         }
     }
 
-    public class DeviceRemovedInfo: DeviceErrorInfo
+    public class DeviceRemovedInfo: IDeviceRemovedInfo
     {
         public string Id { get; set; }
 
@@ -96,7 +123,7 @@ namespace ActorBackendService.Interfaces
         }
     }
 
-    public class DeviceRenamedInfo: DeviceErrorInfo
+    public class DeviceRenamedInfo: IDeviceRenamedInfo
     {
         public string Id { get; set; }
 
@@ -110,7 +137,7 @@ namespace ActorBackendService.Interfaces
         }
     }
 
-    public class DeviceToggledActivationStatusInfo: DeviceErrorInfo
+    public class DeviceToggledActivationStatusInfo: IDeviceToggledActivationStatusInfo
     {
         public string Id { get; set; }
         public bool ActivationStatus { get; set; }

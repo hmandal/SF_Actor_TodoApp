@@ -21,7 +21,7 @@ namespace ActorBackendService
     ///  - None: State is kept in memory only and not replicated.
     /// </remarks>
     [StatePersistence(StatePersistence.Persisted)]
-    internal class DeviceActor : Actor, IDeviceActor
+    public class DeviceActor : Actor, IDeviceActor
     {
         private string _stateName = "DeviceList"; // HMTODO: Store list in WebApi, and Device here.
 
@@ -71,12 +71,7 @@ namespace ActorBackendService
 
         #region DeviceActor
 
-        Task<GetDeviceInfo> IDeviceActor.GetAsync(string deviceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<GetDeviceInfo> IDeviceActor.GetAsync(string deviceId)
+        async Task<IGetDeviceInfo> IDeviceActor.GetAsync(string deviceId)
         {
             ErrorInfo errInfo = null;
             DeviceErrorInfo devErrinfo = null;
@@ -103,7 +98,7 @@ namespace ActorBackendService
             }
         }
 
-        public async Task<DeviceAddedInfo> AddNewAsync()
+        async Task<IDeviceAddedInfo> IDeviceActor.AddNewAsync()
         {
             ErrorInfo errInfo = null;
             DeviceErrorInfo devErrinfo = null;
@@ -133,17 +128,17 @@ namespace ActorBackendService
             }
         }
 
-        public async Task<DeviceRemovedInfo> RemoveAsync(string deviceId)
+        async Task<IDeviceRemovedInfo> IDeviceActor.RemoveAsync(string deviceId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<DeviceRenamedInfo> RenameAsync(string deviceId, string newName)
+        async Task<IDeviceRenamedInfo> IDeviceActor.RenameAsync(string deviceId, string newName)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<DeviceInfoResult> ToggleActivationStatusAsync(string deviceId)
+        async Task<IDeviceToggledActivationStatusInfo> IDeviceActor.ToggleActivationStatusAsync(string deviceId)
         {
             throw new NotImplementedException();
         }

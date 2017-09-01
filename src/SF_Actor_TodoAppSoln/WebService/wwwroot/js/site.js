@@ -101,7 +101,7 @@ function getActorCount() {
             if (http.status < 400) {
                 returnData = JSON.parse(http.responseText);
                 if (returnData) {
-                    countDisplay.innerHTML = returnData.todo;
+                    countDisplay.innerHTML = returnData.device;
                     updateFooter(http, (end - start));
                 }
             } else {

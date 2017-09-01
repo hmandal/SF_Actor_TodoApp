@@ -45,9 +45,10 @@ namespace WebService.Controllers
             IDeviceActor deviceActor = ActorProxy.Create<IDeviceActor>(actorId, new Uri(serviceUri));
 
             // HMTODO: use interfaces instead of concrete classes.
-            DeviceInfoResult todo = await deviceActor.GetAsync();
+            // HMTODO: use real deviceId.
+            IGetDeviceInfo device = await deviceActor.GetAsync("stubDeviceId");
 
-            return this.Json(new TodoViewModel() { Todo = todo });
+            return this.Json(new DeviceViewModel() { Device = device.AddedDevice });
         }
 
         // POST api/actorbackendservice
@@ -59,11 +60,8 @@ namespace WebService.Controllers
             IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(actorId, new Uri(serviceUri));
 
             await proxy.StartProcessingAsync(CancellationToken.None);
-            
-            await proxy.SendTodoAsync();
 
             return this.Json(true);
-
         }
     }
 }

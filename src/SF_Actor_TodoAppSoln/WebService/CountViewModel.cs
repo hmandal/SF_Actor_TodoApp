@@ -3,10 +3,12 @@
 //  Licensed under the MIT License (MIT). See License.txt in the repo root for license information.
 // ------------------------------------------------------------
 
+using ActorBackendService.Interfaces;
+
 namespace WebService
 {
-    public class TodoViewModel
+    public class DeviceViewModel
     {
-        public string Todo { get; set; }
+        public IDevice Device { get; set; }
     }
 }

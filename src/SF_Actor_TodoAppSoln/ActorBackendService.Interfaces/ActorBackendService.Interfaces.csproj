@@ -79,8 +79,8 @@
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDeviceActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IMyActor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

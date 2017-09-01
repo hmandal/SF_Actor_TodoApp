@@ -42,9 +42,10 @@ namespace WebService.Controllers
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
             
             // This only creates a proxy object, it does not activate an actor or invoke any methods yet.
-            IMyActor todoActor = ActorProxy.Create<IMyActor>(actorId, new Uri(serviceUri));
+            IDeviceActor deviceActor = ActorProxy.Create<IDeviceActor>(actorId, new Uri(serviceUri));
 
-            string todo = await todoActor.ReceiveTodoAsync();
+            // HMTODO: use interfaces instead of concrete classes.
+            DeviceInfoResult todo = await deviceActor.GetAsync();
 
             return this.Json(new TodoViewModel() { Todo = todo });
         }
@@ -55,7 +56,7 @@ namespace WebService.Controllers
         {
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
 
-            IMyActor proxy = ActorProxy.Create<IMyActor>(actorId, new Uri(serviceUri));
+            IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(actorId, new Uri(serviceUri));
 
             await proxy.StartProcessingAsync(CancellationToken.None);
             

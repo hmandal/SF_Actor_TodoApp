@@ -9,6 +9,8 @@ namespace ActorBackendService.Interfaces
     using System.Threading.Tasks;
     using Microsoft.ServiceFabric.Actors;
     using System.Runtime.Serialization;
+    using System;
+    using System.Linq;
 
     /// <summary>
     /// This interface defines the methods exposed by an actor.
@@ -85,7 +87,9 @@ namespace ActorBackendService.Interfaces
         DeviceErrorInfo DevErrinfo { get; set; }
     }
 
-    public interface IDeviceAddedInfo : IDeviceInfoResult
+    [DataContract]
+    [KnownType(typeof(DeviceAddedInfo))]
+    public abstract class IDeviceAddedInfo : IDeviceInfoResult
     {
         string Id { get; set; }
     }
@@ -103,7 +107,7 @@ namespace ActorBackendService.Interfaces
     }
 
     [DataContract]
-    [KnownType(typeof(IDeviceAddedInfo))]
+    [KnownType(typeof(DeviceAddedInfo))]
     public class DeviceAddedInfo: IDeviceAddedInfo
     {
         [DataMember]

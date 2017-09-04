@@ -61,9 +61,10 @@ namespace WebService.Controllers
 
             await proxy.StartProcessingAsync(CancellationToken.None);
 
-            IDeviceAddedInfo deviceAddedInfo = await proxy.AddNewAsync();
+            //IDeviceAddedInfo deviceAddedInfo = await proxy.AddNewAsync();
+            string deviceAddedInfo = await proxy.AddNewAsync();
 
-            return this.Json(true);
+            return this.Json(deviceAddedInfo);
         }
     }
 }

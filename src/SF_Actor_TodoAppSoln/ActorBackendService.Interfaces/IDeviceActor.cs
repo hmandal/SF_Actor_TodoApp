@@ -17,7 +17,8 @@ namespace ActorBackendService.Interfaces
     public interface IDeviceActor : IActor
     {
         Task<IGetDeviceInfo> GetAsync(string deviceId);
-        Task<IDeviceAddedInfo> AddNewAsync();
+        //Task<IDeviceAddedInfo> AddNewAsync();
+        Task<string> AddNewAsync();
         Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
         Task<IDeviceRenamedInfo> RenameAsync(string deviceId, string newName);
         Task<IDeviceToggledActivationStatusInfo> ToggleActivationStatusAsync(string deviceId);
@@ -42,9 +43,11 @@ namespace ActorBackendService.Interfaces
     {
     }
 
+    [DataContract]
     public class DeviceErrorInfo
     {
         public bool IsSuccess { get; set; }
+        [DataMember]
         public ErrorInfo ErrorInfo { get; set; }
 
         public DeviceErrorInfo()
@@ -58,9 +61,12 @@ namespace ActorBackendService.Interfaces
         }
     }
 
+    [DataContract]
     public class GetDeviceInfo : IGetDeviceInfo
     {
+        [DataMember]
         public Device AddedDevice { get; set; }
+        [DataMember]
         public DeviceErrorInfo DevErrinfo { get; set; }
 
         // HMTODO: remove all usused ctors.
@@ -82,6 +88,7 @@ namespace ActorBackendService.Interfaces
 
     public interface IDeviceAddedInfo : IDeviceInfoResult
     {
+        string Id { get; set; }
     }
 
     public interface IDeviceRemovedInfo : IDeviceInfoResult
@@ -97,6 +104,7 @@ namespace ActorBackendService.Interfaces
     }
 
     [DataContract]
+    [KnownType(typeof(DeviceAddedInfo))]
     public class DeviceAddedInfo: IDeviceAddedInfo
     {
         public string Id { get; set; }
@@ -155,6 +163,7 @@ namespace ActorBackendService.Interfaces
         }
     }
 
+    [DataContract]
     public class ErrorInfo
     {
         public string Msg { get; set; }
@@ -169,6 +178,7 @@ namespace ActorBackendService.Interfaces
         }
     }
 
+    [DataContract]
     public class Device : IDevice
     {
         public string Id { get; set; }

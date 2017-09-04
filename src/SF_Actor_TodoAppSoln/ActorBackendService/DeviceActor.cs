@@ -21,6 +21,7 @@ namespace ActorBackendService
     ///  - None: State is kept in memory only and not replicated.
     /// </remarks>
     [StatePersistence(StatePersistence.Persisted)]
+    [System.Runtime.Serialization.KnownType(typeof(DeviceAddedInfo))]
     public class DeviceActor : Actor, IDeviceActor
     {
         private string _stateName = "DeviceList"; // HMTODO: Store list in WebApi, and Device here.
@@ -98,11 +99,10 @@ namespace ActorBackendService
             }
         }
 
-        async Task<IDeviceAddedInfo> IDeviceActor.AddNewAsync()
+        //async Task<IDeviceAddedInfo> IDeviceActor.AddNewAsync()
+        async Task<string> IDeviceActor.AddNewAsync()
         {
-            ErrorInfo errInfo = null;
-            DeviceErrorInfo devErrinfo = null;
-            DeviceAddedInfo retVal = null;
+            IDeviceAddedInfo retVal = null;
 
             try
             {
@@ -110,21 +110,19 @@ namespace ActorBackendService
 
                 // HMTODO: Add a real Device here.
                 Device addedDevice = await this.StateManager.AddOrUpdateStateAsync<Device>(_stateName, deviceToAdd, (key, value) => deviceToAdd);
-
-                devErrinfo = new DeviceErrorInfo(true, null);
+                
                 retVal = new DeviceAddedInfo(addedDevice.Id);
 
-                return retVal;
+                //return retVal;
+                return "test1";
             }
             catch (Exception)
             {
-                errInfo = new ErrorInfo("AddNewAsync Failed.");
-                devErrinfo = new DeviceErrorInfo(false, errInfo);
-
                 // HMTODO: Replace this with a Representation of no device.
                 retVal = new DeviceAddedInfo(string.Empty);
 
-                return retVal;
+                //return retVal;
+                return "test2";
             }
         }
 

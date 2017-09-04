@@ -99,8 +99,7 @@ namespace ActorBackendService
             }
         }
 
-        //async Task<IDeviceAddedInfo> IDeviceActor.AddNewAsync()
-        async Task<string> IDeviceActor.AddNewAsync()
+        async Task<IDeviceAddedInfo> IDeviceActor.AddNewAsync()
         {
             IDeviceAddedInfo retVal = null;
 
@@ -113,16 +112,14 @@ namespace ActorBackendService
                 
                 retVal = new DeviceAddedInfo(addedDevice.Id);
 
-                //return retVal;
-                return "test1";
+                return retVal;
             }
             catch (Exception)
             {
                 // HMTODO: Replace this with a Representation of no device.
                 retVal = new DeviceAddedInfo(string.Empty);
 
-                //return retVal;
-                return "test2";
+                return retVal;
             }
         }
 

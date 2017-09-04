@@ -17,8 +17,7 @@ namespace ActorBackendService.Interfaces
     public interface IDeviceActor : IActor
     {
         Task<IGetDeviceInfo> GetAsync(string deviceId);
-        //Task<IDeviceAddedInfo> AddNewAsync();
-        Task<string> AddNewAsync();
+        Task<IDeviceAddedInfo> AddNewAsync();
         Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
         Task<IDeviceRenamedInfo> RenameAsync(string deviceId, string newName);
         Task<IDeviceToggledActivationStatusInfo> ToggleActivationStatusAsync(string deviceId);
@@ -104,9 +103,10 @@ namespace ActorBackendService.Interfaces
     }
 
     [DataContract]
-    [KnownType(typeof(DeviceAddedInfo))]
+    [KnownType(typeof(IDeviceAddedInfo))]
     public class DeviceAddedInfo: IDeviceAddedInfo
     {
+        [DataMember]
         public string Id { get; set; }
 
         public DeviceAddedInfo()

@@ -1,5 +1,5 @@
-﻿/* This function calls the StatelessBackendController's HTTP GET method to get the current count from the StatelessBackendService */
-function getStatelessBackendCount() {
+﻿/* This function calls the ActorBackendController's HTTP GET method to get the number of actors in the ActorBackendService */
+function getAllDevices() {
     var http = new XMLHttpRequest();
     http.onreadystatechange = function () {
         if (http.readyState === 4) {
@@ -7,102 +7,8 @@ function getStatelessBackendCount() {
             if (http.status < 400) {
                 returnData = JSON.parse(http.responseText);
                 if (returnData) {
-                    countDisplay.innerHTML = returnData.count;
                     updateFooter(http, (end - start));
-                }
-            } else {
-                updateFooter(http, (end - start));
-            }
-        }
-    };
-    start = new Date().getTime();
-    http.open("GET", "/api/StatelessBackendService/?c=" + start);
-    http.send();
-}
-
-/* This function calls the GuestExeBackendService's HTTP GET method to get the current count from the GuestExeBackendService */
-function getGuestExeBackendService() {
-    var http = new XMLHttpRequest();
-    http.onreadystatechange = function () {
-        if (http.readyState === 4) {
-            end = new Date().getTime();
-            if (http.status < 400) {
-                if (http.responseText) {
-                    countDisplay.innerHTML = "This node is named " + http.responseText;
-                    updateFooter(http, (end - start));
-                }
-            } else {
-                updateFooter(http, (end - start));
-            }
-        }
-    };
-    start = new Date().getTime();
-    http.open("GET", "/api/GuestExeBackendService/?c=" + start);
-    http.send();
-}
-
-/* This function calls the StatefulBackendController's HTTP GET method to get a collection of KeyValuePairs from the reliable dictionary in the StatefulBackendService */
-function getStatefulBackendServiceDictionary() {
-    var http = new XMLHttpRequest();
-    http.onreadystatechange = function () {
-        if (http.readyState === 4) {
-            end = new Date().getTime();
-            if (http.status < 400) {
-                returnData = JSON.parse(http.responseText);
-                if (returnData) {
-                    renderStatefulBackendServiceDictionary(returnData);
-                    updateFooter(http, (end - start));
-                    //postMessage("Got all KeyValuePairs in  " + (end - start).toString() + "ms.", "success", true);
-                }
-            } else {
-                updateFooter(http, (end - start));
-                //postMessage(http.statusText, "danger", true);
-            }
-        }
-    };
-    start = new Date().getTime();
-    http.open("GET", "/api/StatefulBackendService/?c=" + start);
-    http.send();
-}
-
-/* This function calls the StatefulBackendController's HTTP PUT method to insert a KeyValuePair in the reliable dictionary in the StatefulBackendService */
-function addStatefulBackendServiceKeyValuePair() {
-    var keyValue = {
-        key: keyInput.value,
-        value: valueInput.value
-    };
-    var http = new XMLHttpRequest();
-    http.onreadystatechange = function () {
-        if (http.readyState === 4) {
-            end = new Date().getTime();
-            if (http.status < 400) {
-                keyInput.value = '';
-                valueInput.value = '';
-                keyInput.focus();
-                updateFooter(http, (end - start));
-            } else {
-                keyInput.focus();
-                updateFooter(http, (end - start));
-            }
-        }
-    };
-    start = new Date().getTime();
-    http.open("PUT", "/api/StatefulBackendService/?c=" + start);
-    http.setRequestHeader("content-type", "application/json");
-    http.send(JSON.stringify(keyValue));
-}
-
-/* This function calls the ActorBackendController's HTTP GET method to get the number of actors in the ActorBackendService */
-function getActorCount() {
-    var http = new XMLHttpRequest();
-    http.onreadystatechange = function () {
-        if (http.readyState === 4) {
-            end = new Date().getTime();
-            if (http.status < 400) {
-                returnData = JSON.parse(http.responseText);
-                if (returnData) {
                     countDisplay.innerHTML = returnData.device;
-                    updateFooter(http, (end - start));
                 }
             } else {
                 updateFooter(http, (end - start));
@@ -110,12 +16,14 @@ function getActorCount() {
         }
     };
     start = new Date().getTime();
-    http.open("GET", "/api/ActorBackendService/?c=" + start);
+    http.open("GET", "/api/ActorBackendService/GetAllDevicesAsync/?c=" + start);
     http.send();
 }
 
 /* This function calls the ActorBackendController's HTTP POST method to create a new actor in the ActorBackendService */
-function newActor() {
+function addNewDevice() {
+    var devActorId = getDeviceActorId();
+
     var http = new XMLHttpRequest();
     http.onreadystatechange = function () {
         if (http.readyState === 4) {
@@ -132,31 +40,41 @@ function newActor() {
         }
     };
     start = new Date().getTime();
-    http.open("POST", "/api/ActorBackendService/?c=" + start);
+    http.open("POST", "/api/ActorBackendService/AddNewDeviceAsync/devActorId/?c=" + start);
     http.send();
 }
 
-/* UI Helper fuctions */
-
-/* This function renders the output of the call to the Stateful Backend Service in a table */
-function renderStatefulBackendServiceDictionary(dictionary) {
-    var table = document.getElementById('statefulBackendServiceTable').childNodes[1];
-
-    while (table.childElementCount > 1) {
-        table.removeChild(table.lastChild);
-    }
-
-    for (var i = 0; i < dictionary.length; i++) {
-        var tr = document.createElement('tr');
-        var tdKey = document.createElement('td');
-        tdKey.appendChild(document.createTextNode(dictionary[i].key));
-        tr.appendChild(tdKey);
-        var tdValue = document.createElement('td');
-        tdValue.appendChild(document.createTextNode(dictionary[i].value));
-        tr.appendChild(tdValue);
-        table.appendChild(tr);
-    }
+function stubFn() {
+    var http = new XMLHttpRequest();
+    http.onreadystatechange = function () {
+        if (http.readyState === 4) {
+            end = new Date().getTime();
+            if (http.status < 400) {
+                returnData = JSON.parse(http.responseText);
+                if (returnData) {
+                    updateFooter(http, (end - start));
+                    countDisplay.innerHTML = returnData;
+                }
+            } else {
+                updateFooter(http, (end - start));
+            }
+        }
+    };
+    start = new Date().getTime();
+    http.open("POST", "/api/ActorBackendService/StubEndpointAsync/?c=" + start);
+    http.send();
 }
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive)
+ * Using Math.round() will give you a non-uniform distribution!
+ * @returns {number} Device Actor ID.
+ */
+function getDeviceActorId() {
+    return getDeviceActorId.deviceActorId++;
+}
+
+getDeviceActorId.deviceActorId = 1000;
 
 /* This function highlights the current nav tab */
 function navTab() {

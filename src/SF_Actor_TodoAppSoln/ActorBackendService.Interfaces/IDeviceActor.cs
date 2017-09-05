@@ -23,6 +23,7 @@ namespace ActorBackendService.Interfaces
         Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
         Task<IDeviceRenamedInfo> RenameAsync(string deviceId, string newName);
         Task<IDeviceToggledActivationStatusInfo> ToggleActivationStatusAsync(string deviceId);
+        Task<string> StubActionAsync();
         Task StartProcessingAsync(CancellationToken none);
     }
 

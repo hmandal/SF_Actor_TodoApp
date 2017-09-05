@@ -20,13 +20,13 @@ namespace WebService.Controllers
     using System.Threading;
     using System.Threading.Tasks;
 
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class ActorBackendServiceController : Controller
     {
         private readonly FabricClient fabricClient;
         private readonly ConfigSettings configSettings;
         private readonly StatelessServiceContext serviceContext;
-        private ActorId actorId = new ActorId(111);
+        private List<ActorId> actorIds = new List<ActorId>();
 
         public ActorBackendServiceController(StatelessServiceContext serviceContext, ConfigSettings settings, FabricClient fabricClient)
         {
@@ -37,7 +37,7 @@ namespace WebService.Controllers
 
         // GET: api/actorbackendservice
         [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAllDevicesAsync()
         {
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
             
@@ -52,8 +52,28 @@ namespace WebService.Controllers
         }
 
         // POST api/actorbackendservice
+        [Route("api/[controller]/[action]/[id]")]
         [HttpPost]
-        public async Task<IActionResult> PostAsync()
+        public async Task<IActionResult> AddNewDeviceAsync(string deviceActorId)
+        {
+            string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
+
+            ActorId devActorId = new ActorId(deviceActorId);
+
+            // HMTODO: add proper comments.
+            actorIds.Add(devActorId);
+
+            IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(devActorId, new Uri(serviceUri));
+
+            await proxy.StartProcessingAsync(CancellationToken.None);
+
+            IDeviceAddedInfo deviceAddedInfo = await proxy.AddNewAsync();
+
+            return this.Json(deviceAddedInfo);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StubEndpointAsync()
         {
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
 
@@ -61,9 +81,9 @@ namespace WebService.Controllers
 
             await proxy.StartProcessingAsync(CancellationToken.None);
 
-            IDeviceAddedInfo deviceAddedInfo = await proxy.AddNewAsync();
-
-            return this.Json(deviceAddedInfo);
+            string stubTxt = await proxy.StubActionAsync();
+            
+            return await Task.Run(() => { return this.Json(stubTxt); });
         }
     }
 }

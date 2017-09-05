@@ -47,6 +47,7 @@ namespace ActorBackendService.Interfaces
     [DataContract]
     public class DeviceErrorInfo
     {
+        [DataMember]
         public bool IsSuccess { get; set; }
         [DataMember]
         public ErrorInfo ErrorInfo { get; set; }
@@ -111,6 +112,7 @@ namespace ActorBackendService.Interfaces
     {
         [DataMember]
         public string Id { get; set; }
+        [DataMember]
         public DeviceErrorInfo DevErrInfo { get; set; }
 
         public DeviceAddedInfo()
@@ -171,6 +173,7 @@ namespace ActorBackendService.Interfaces
     [DataContract]
     public class ErrorInfo
     {
+        [DataMember]
         public string Msg { get; set; }
 
         public ErrorInfo()

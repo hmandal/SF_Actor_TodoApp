@@ -124,6 +124,8 @@ function newActor() {
                 returnData = JSON.parse(http.responseText);
                 if (returnData) {
                     updateFooter(http, (end - start));
+                    countDisplay.innerHTML = returnData.id + ((((returnData || {}).devErrInfo || {}).errorInfo || {}).msg || " <NoErrors>");
+                    //returnData.devErrInfo.errorInfo.msg;
                 }
             } else {
                 updateFooter(http, (end - start));

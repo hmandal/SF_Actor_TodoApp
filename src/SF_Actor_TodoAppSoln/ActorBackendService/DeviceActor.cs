@@ -25,6 +25,7 @@ namespace ActorBackendService
     public class DeviceActor : Actor, IDeviceActor
     {
         private string _stateName = "DeviceList"; // HMTODO: Store list in WebApi, and Device here.
+        private bool _isReplay = false; // HMTODO: Store list in WebApi, and Device here.
 
         /// <summary>
         /// Initializes a new instance of ActorBackendService
@@ -46,8 +47,9 @@ namespace ActorBackendService
 
                 if (!added)
                 {
+                    _isReplay = true;
                     // value already exists, which means processing has already started.
-                    throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ImplementationType.Name }) has already started.");
+                    //throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ImplementationType.Name }) has already started.");
                 }
             }
             catch (Exception)
@@ -74,13 +76,13 @@ namespace ActorBackendService
 
         async Task<IGetDeviceInfo> IDeviceActor.GetAsync(string deviceId)
         {
-            ErrorInfo errInfo = null;
             DeviceErrorInfo devErrinfo = null;
+
             GetDeviceInfo retVal = null;
 
             try
             {
-                // HMTODO: Add a real Device here.
+                // HMTODO: Get a real Device here.
                 // HMTODO: use cancellation token.
                 Device addedDevice = await this.StateManager.GetStateAsync<Device>(_stateName, CancellationToken.None);
 
@@ -91,7 +93,7 @@ namespace ActorBackendService
             }
             catch (Exception)
             {
-                errInfo = new ErrorInfo("GetAsync Failed.");
+                ErrorInfo errInfo = new ErrorInfo("GetAsync Failed.");
                 devErrinfo = new DeviceErrorInfo(false, errInfo);
                 retVal = new GetDeviceInfo(null, devErrinfo);
 
@@ -99,25 +101,33 @@ namespace ActorBackendService
             }
         }
 
-        async Task<IDeviceAddedInfo> IDeviceActor.AddNewAsync()
+        async Task<DeviceAddedInfo> IDeviceActor.AddNewAsync()
         {
-            IDeviceAddedInfo retVal = null;
+            DeviceErrorInfo devErrinfo = new DeviceErrorInfo(true, null);
+
+            DeviceAddedInfo retVal = null;
 
             try
             {
                 Device deviceToAdd = new Device("MyDeviceId", "MyDeviceName", true);
 
                 // HMTODO: Add a real Device here.
+                // HMTODO: use cancellation token.
                 Device addedDevice = await this.StateManager.AddOrUpdateStateAsync<Device>(_stateName, deviceToAdd, (key, value) => deviceToAdd);
-                
-                retVal = new DeviceAddedInfo(addedDevice.Id);
+
+                devErrinfo = new DeviceErrorInfo(true, null);
+
+                retVal = new DeviceAddedInfo(addedDevice.Id, devErrinfo);
 
                 return retVal;
             }
             catch (Exception)
             {
+                ErrorInfo errInfo = new ErrorInfo($"AddNewAsync failed!");
+                devErrinfo = new DeviceErrorInfo(false, errInfo);
+
                 // HMTODO: Replace this with a Representation of no device.
-                retVal = new DeviceAddedInfo(string.Empty);
+                retVal = new DeviceAddedInfo(string.Empty, devErrinfo);
 
                 return retVal;
             }

@@ -141,43 +141,9 @@ namespace ActorBackendService
             }
         }
 
-        async Task<string> IDeviceActor.StubActionAsync()
-        {
-            return await Task.Run(() => { return "StubRetVal"; });
-        }
-
         async Task<IDeviceRemovedInfo> IDeviceActor.RemoveAsync(string deviceId)
         {
             throw new NotImplementedException();
-        }
-
-        async Task<DeviceRenamedInfo> IDeviceActor.RenameFirstDeviceAsync()
-        {
-            DeviceErrorInfo devErrinfo = null;
-            ErrorInfo errInfo = null;
-            DeviceRenamedInfo retVal = null;
-
-            try
-            {
-                // HMTODO: Get a real Device here.
-                // HMTODO: use cancellation token.
-                Device deviceToRename = await this.StateManager.GetStateAsync<Device>(_stateName, CancellationToken.None);
-
-                deviceToRename.Name = "ChangedDeviceName";
-
-                devErrinfo = new DeviceErrorInfo(true, errInfo);
-                retVal = new DeviceRenamedInfo(deviceToRename.Id, devErrinfo);
-
-                return retVal;
-            }
-            catch (Exception)
-            {
-                errInfo = new ErrorInfo("RenameFirstDeviceAsync Failed.");
-                devErrinfo = new DeviceErrorInfo(false, errInfo);
-                retVal = new DeviceRenamedInfo(null, devErrinfo);
-
-                return retVal;
-            }
         }
 
         async Task<IDeviceRenamedInfo> IDeviceActor.RenameAsync(string deviceId, string newName)

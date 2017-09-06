@@ -8,7 +8,8 @@ function getAllDevices() {
                 returnData = JSON.parse(http.responseText);
                 if (returnData) {
                     updateFooter(http, (end - start));
-                    countDisplay.innerHTML = returnData.device;
+                    countDisplay.innerHTML = returnData.devicesInfo[0].addedDevice.id
+                        + returnData.devicesInfo[1].addedDevice.id;
                 }
             } else {
                 updateFooter(http, (end - start));
@@ -44,7 +45,31 @@ function addNewDevice() {
     http.send();
 }
 
+/* This function calls the ActorBackendController's HTTP POST method to create a new actor in the ActorBackendService */
+function renameFirstDevice() {
+    var http = new XMLHttpRequest();
+    http.onreadystatechange = function () {
+        if (http.readyState === 4) {
+            end = new Date().getTime();
+            if (http.status < 400) {
+                returnData = JSON.parse(http.responseText);
+                if (returnData) {
+                    updateFooter(http, (end - start));
+                    countDisplay.innerHTML = returnData.id + ((((returnData || {}).devErrInfo || {}).errorInfo || {}).msg || " \<NoErrors\>");
+                }
+            } else {
+                updateFooter(http, (end - start));
+            }
+        }
+    };
+    start = new Date().getTime();
+    http.open("POST", "/api/ActorBackendService/RenameFirstDeviceAsync/?c=" + start);
+    http.send();
+}
+
 function stubFn() {
+    var devActorId = getDeviceActorId();
+
     var http = new XMLHttpRequest();
     http.onreadystatechange = function () {
         if (http.readyState === 4) {

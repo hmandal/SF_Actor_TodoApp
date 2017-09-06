@@ -18,9 +18,10 @@ namespace ActorBackendService.Interfaces
     /// </summary>
     public interface IDeviceActor : IActor
     {
-        Task<IGetDeviceInfo> GetAsync(string deviceId);
+        Task<GetDeviceInfo> GetAsync(string deviceId);
         Task<DeviceAddedInfo> AddNewAsync();
         Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
+        Task<DeviceRenamedInfo> RenameFirstDeviceAsync();
         Task<IDeviceRenamedInfo> RenameAsync(string deviceId, string newName);
         Task<IDeviceToggledActivationStatusInfo> ToggleActivationStatusAsync(string deviceId);
         Task<string> StubActionAsync();
@@ -101,6 +102,9 @@ namespace ActorBackendService.Interfaces
 
     public interface IDeviceRenamedInfo : IDeviceInfoResult
     {
+        string Id { get; set; }
+        DeviceErrorInfo DevErrInfo { get; set; }
+
     }
 
     public interface IDeviceToggledActivationStatusInfo : IDeviceInfoResult
@@ -141,17 +145,22 @@ namespace ActorBackendService.Interfaces
         }
     }
 
+    [DataContract]
     public class DeviceRenamedInfo: IDeviceRenamedInfo
     {
+        [DataMember]
         public string Id { get; set; }
+        [DataMember]
+        public DeviceErrorInfo DevErrInfo { get; set; }
 
         public DeviceRenamedInfo()
         {
         }
 
-        public DeviceRenamedInfo(string id)
+        public DeviceRenamedInfo(string id, DeviceErrorInfo devErrInfo)
         {
             Id = id;
+            DevErrInfo = devErrInfo;
         }
     }
 
@@ -190,8 +199,11 @@ namespace ActorBackendService.Interfaces
     [DataContract]
     public class Device : IDevice
     {
+        [DataMember]
         public string Id { get; set; }
+        [DataMember]
         public string Name { get; set; }
+        [DataMember]
         public bool ActivationStatus { get; set; }
 
         public Device()

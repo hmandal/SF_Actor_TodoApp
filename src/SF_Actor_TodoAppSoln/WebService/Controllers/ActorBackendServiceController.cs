@@ -26,7 +26,7 @@ namespace WebService.Controllers
         private readonly FabricClient fabricClient;
         private readonly ConfigSettings configSettings;
         private readonly StatelessServiceContext serviceContext;
-        private List<ActorId> actorIds = new List<ActorId>();
+        private static List<ActorId> actorIds = new List<ActorId>();
 
         public ActorBackendServiceController(StatelessServiceContext serviceContext, ConfigSettings settings, FabricClient fabricClient)
         {
@@ -76,6 +76,23 @@ namespace WebService.Controllers
             IDeviceAddedInfo deviceAddedInfo = await proxy.AddNewAsync();
 
             return this.Json(deviceAddedInfo);
+        }
+
+        // POST api/actorbackendservice
+        [HttpPost]
+        public async Task<IActionResult> RenameFirstDeviceAsync()
+        {
+            string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
+
+            ActorId devActorId = actorIds.FirstOrDefault();
+
+            IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(devActorId, new Uri(serviceUri));
+
+            await proxy.StartProcessingAsync(CancellationToken.None);
+
+            IDeviceRenamedInfo deviceRenamedInfo = await proxy.RenameFirstDeviceAsync();
+
+            return this.Json(deviceRenamedInfo);
         }
 
         [HttpPost]

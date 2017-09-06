@@ -41,16 +41,16 @@ namespace ActorBackendService
         {
             try
             {
-                Device stubDevice = new Device("stubDeviceId", "stubDeviceName", true);
+                //Device stubDevice = new Device("stubDeviceId", "stubDeviceName", true);
 
-                bool added = await this.StateManager.TryAddStateAsync<Device>(_stateName, stubDevice);
+                //bool added = await this.StateManager.TryAddStateAsync<Device>(_stateName, stubDevice);
 
-                if (!added)
-                {
-                    _isReplay = true;
-                    // value already exists, which means processing has already started.
-                    //throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ImplementationType.Name }) has already started.");
-                }
+                //if (!added)
+                //{
+                //    _isReplay = true;
+                //    // value already exists, which means processing has already started.
+                //    //throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ImplementationType.Name }) has already started.");
+                //}
             }
             catch (Exception)
             {
@@ -74,7 +74,7 @@ namespace ActorBackendService
 
         #region DeviceActor
 
-        async Task<GetDeviceInfo> IDeviceActor.GetAsync(string deviceId)
+        async Task<GetDeviceInfo> IDeviceActor.GetAsync()
         {
             DeviceErrorInfo devErrinfo = null;
             ErrorInfo errInfo = null;

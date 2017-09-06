@@ -49,7 +49,7 @@ namespace WebService.Controllers
 
                 // HMTODO: use interfaces instead of concrete classes.
                 // HMTODO: use real deviceId.
-                IGetDeviceInfo device = await deviceActor.GetAsync("stubDeviceId");
+                IGetDeviceInfo device = await deviceActor.GetAsync();
 
                 devices.Add(device);
             }

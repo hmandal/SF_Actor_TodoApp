@@ -18,7 +18,7 @@ namespace ActorBackendService.Interfaces
     /// </summary>
     public interface IDeviceActor : IActor
     {
-        Task<GetDeviceInfo> GetAsync(string deviceId);
+        Task<GetDeviceInfo> GetAsync();
         Task<DeviceAddedInfo> AddNewAsync();
         Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
         Task<DeviceRenamedInfo> RenameFirstDeviceAsync();

@@ -4,11 +4,16 @@
 // ------------------------------------------------------------
 
 using ActorBackendService.Interfaces;
+using System.Collections.Generic;
 
 namespace WebService
 {
     public class DeviceViewModel
     {
-        public IDevice Device { get; set; }
+        public IGetDeviceInfo DeviceInfo { get; set; }
+    }
+    public class DevicesViewModel
+    {
+        public IEnumerable<IGetDeviceInfo> DevicesInfo { get; set; }
     }
 }

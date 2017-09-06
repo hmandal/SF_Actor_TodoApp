@@ -40,7 +40,7 @@ function addNewDevice() {
         }
     };
     start = new Date().getTime();
-    http.open("POST", "/api/ActorBackendService/AddNewDeviceAsync/devActorId/?c=" + start);
+    http.open("POST", "/api/ActorBackendService/AddNewDeviceAsync/" + devActorId + "/?c=" + start);
     http.send();
 }
 
@@ -61,7 +61,7 @@ function stubFn() {
         }
     };
     start = new Date().getTime();
-    http.open("POST", "/api/ActorBackendService/StubEndpointAsync/?c=" + start);
+    http.open("POST", "/api/ActorBackendService/StubEndpointAsync" + devActorId + "/?c=" + start);
     http.send();
 }
 

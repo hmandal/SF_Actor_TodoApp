@@ -33,7 +33,9 @@ function addNewDevice() {
                 returnData = JSON.parse(http.responseText);
                 if (returnData) {
                     updateFooter(http, (end - start));
-                    countDisplay.innerHTML = returnData.id + ((((returnData || {}).devErrInfo || {}).errorInfo || {}).msg || " \<NoErrors\>");
+                    //countDisplay.innerHTML = returnData.id + ((((returnData || {}).devErrInfo || {}).errorInfo || {}).msg || " \<NoErrors\>");
+                    debugger;
+                    countDisplay.innerHTML = '<button class="btn btn- primary btn- block" onclick="addNewDevice()" type="button" id="addNewDevice" tabindex="1">' + returnData.id + '</button>';
                 }
             } else {
                 updateFooter(http, (end - start));

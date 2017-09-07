@@ -92,7 +92,7 @@ namespace ActorBackendService.Interfaces
 
     public interface IDeviceAddedInfo : IDeviceInfoResult
     {
-        string Id { get; set; }
+        Device Device { get; set; }
         DeviceErrorInfo DevErrInfo { get; set; }
     }
 
@@ -116,7 +116,7 @@ namespace ActorBackendService.Interfaces
     public class DeviceAddedInfo: IDeviceAddedInfo
     {
         [DataMember]
-        public string Id { get; set; }
+        public Device Device { get; set; }
         [DataMember]
         public DeviceErrorInfo DevErrInfo { get; set; }
 

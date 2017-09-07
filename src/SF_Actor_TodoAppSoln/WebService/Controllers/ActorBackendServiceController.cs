@@ -77,5 +77,41 @@ namespace WebService.Controllers
 
             return this.Json(deviceAddedInfo);
         }
+
+        // POST api/actorbackendservice
+        [HttpPost]
+        public async Task<IActionResult> RenameFirstDeviceAsync()
+        {
+            string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
+
+            ActorId devActorId = actorIds.FirstOrDefault();
+
+            IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(devActorId, new Uri(serviceUri));
+
+            await proxy.StartProcessingAsync(CancellationToken.None);
+
+            IDeviceRenamedInfo deviceRenamedInfo = await proxy.RenameFirstDeviceAsync();
+
+            return this.Json(deviceRenamedInfo);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StubEndpointAsync(string deviceActorId)
+        {
+            string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
+
+            ActorId devActorId = new ActorId(deviceActorId);
+
+            // HMTODO: add proper comments.
+            //actorIds.Add(devActorId);
+
+            IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(devActorId, new Uri(serviceUri));
+
+            await proxy.StartProcessingAsync(CancellationToken.None);
+
+            string stubTxt = await proxy.StubActionAsync();
+            
+            return await Task.Run(() => { return this.Json(stubTxt); });
+        }
     }
 }

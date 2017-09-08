@@ -18,11 +18,10 @@ namespace ActorBackendService.Interfaces
     /// </summary>
     public interface IDeviceActor : IActor
     {
-        Task<GetDeviceInfo> GetAsync(string deviceId);
-        Task<DeviceAddedInfo> AddNewAsync();
+        Task<GetDeviceInfo> GetAsync();
+        Task<DeviceAddedInfo> AddNewAsync(string deviceId);
         Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
-        Task<DeviceRenamedInfo> RenameFirstDeviceAsync();
-        Task<IDeviceRenamedInfo> RenameAsync(string deviceId, string newName);
+        Task<DeviceRenamedInfo> RenameDeviceAsync(string deviceId, string newDeviceName);
         Task<IDeviceToggledActivationStatusInfo> ToggleActivationStatusAsync(string deviceId);
         Task<string> StubActionAsync();
         Task StartProcessingAsync(CancellationToken none);
@@ -69,7 +68,7 @@ namespace ActorBackendService.Interfaces
     public class GetDeviceInfo : IGetDeviceInfo
     {
         [DataMember]
-        public Device AddedDevice { get; set; }
+        public Device Device { get; set; }
         [DataMember]
         public DeviceErrorInfo DevErrinfo { get; set; }
 
@@ -79,14 +78,14 @@ namespace ActorBackendService.Interfaces
         }
         public GetDeviceInfo(Device addedDevice, DeviceErrorInfo devErrInfo)
         {
-            AddedDevice = addedDevice;
+            Device = addedDevice;
             DevErrinfo = devErrInfo;
         }
     }
 
     public interface IGetDeviceInfo: IDeviceInfoResult
     {
-        Device AddedDevice { get; set; }
+        Device Device { get; set; }
         DeviceErrorInfo DevErrinfo { get; set; }
     }
 
@@ -102,7 +101,7 @@ namespace ActorBackendService.Interfaces
 
     public interface IDeviceRenamedInfo : IDeviceInfoResult
     {
-        string Id { get; set; }
+        Device Device { get; set; }
         DeviceErrorInfo DevErrInfo { get; set; }
 
     }
@@ -149,7 +148,7 @@ namespace ActorBackendService.Interfaces
     public class DeviceRenamedInfo: IDeviceRenamedInfo
     {
         [DataMember]
-        public string Id { get; set; }
+        public Device Device { get; set; }
         [DataMember]
         public DeviceErrorInfo DevErrInfo { get; set; }
 
@@ -157,9 +156,9 @@ namespace ActorBackendService.Interfaces
         {
         }
 
-        public DeviceRenamedInfo(string id, DeviceErrorInfo devErrInfo)
+        public DeviceRenamedInfo(Device device, DeviceErrorInfo devErrInfo)
         {
-            Id = id;
+            Device = device;
             DevErrInfo = devErrInfo;
         }
     }

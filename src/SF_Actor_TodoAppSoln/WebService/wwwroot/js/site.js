@@ -8,8 +8,8 @@ function getAllDevices() {
                 returnData = JSON.parse(http.responseText);
                 if (returnData) {
                     updateFooter(http, (end - start));
-                    countDisplay.innerHTML = returnData.devicesInfo[0].addedDevice.id
-                        + returnData.devicesInfo[1].addedDevice.id;
+                    countDisplay.innerHTML = returnData.devicesInfo[0].device.id
+                        + returnData.devicesInfo[1].device.id;
                 }
             } else {
                 updateFooter(http, (end - start));

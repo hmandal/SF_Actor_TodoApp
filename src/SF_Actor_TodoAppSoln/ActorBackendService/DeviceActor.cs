@@ -24,7 +24,7 @@ namespace ActorBackendService
     [System.Runtime.Serialization.KnownType(typeof(DeviceAddedInfo))]
     public class DeviceActor : Actor, IDeviceActor
     {
-        private string _stateName = "DeviceList"; // HMTODO: Store list in WebApi, and Device here.
+        private string _stateName = "Device"; // HMTODO: Store list in WebApi, and Device here.
         private bool _isReplay = false; // HMTODO: Store list in WebApi, and Device here.
 
         /// <summary>
@@ -41,16 +41,16 @@ namespace ActorBackendService
         {
             try
             {
-                Device stubDevice = new Device("stubDeviceId", "stubDeviceName", true);
+                //Device stubDevice = new Device("stubDeviceId", "stubDeviceName", true);
 
-                bool added = await this.StateManager.TryAddStateAsync<Device>(_stateName, stubDevice);
+                //bool added = await this.StateManager.TryAddStateAsync<Device>(_stateName, stubDevice);
 
-                if (!added)
-                {
-                    _isReplay = true;
-                    // value already exists, which means processing has already started.
-                    //throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ImplementationType.Name }) has already started.");
-                }
+                //if (!added)
+                //{
+                //    _isReplay = true;
+                //    // value already exists, which means processing has already started.
+                //    //throw new InvalidOperationException($"Processing for this actor (ActorId: { this.ActorService.ActorTypeInformation.ImplementationType.Name }) has already started.");
+                //}
             }
             catch (Exception)
             {
@@ -74,7 +74,7 @@ namespace ActorBackendService
 
         #region DeviceActor
 
-        async Task<GetDeviceInfo> IDeviceActor.GetAsync(string deviceId)
+        async Task<GetDeviceInfo> IDeviceActor.GetAsync()
         {
             DeviceErrorInfo devErrinfo = null;
             ErrorInfo errInfo = null;
@@ -101,7 +101,7 @@ namespace ActorBackendService
             }
         }
 
-        async Task<DeviceAddedInfo> IDeviceActor.AddNewAsync()
+        async Task<DeviceAddedInfo> IDeviceActor.AddNewAsync(string deviceId)
         {
             DeviceErrorInfo devErrinfo = new DeviceErrorInfo(true, null);
             ErrorInfo errInfo = null;
@@ -109,7 +109,7 @@ namespace ActorBackendService
 
             try
             {
-                Device deviceToAdd = new Device($"{{DeviceId-{Guid.NewGuid()}}}", $"{{DeviceName-{Guid.NewGuid()}}}", true);
+                Device deviceToAdd = new Device(deviceId, $"DeviceName_{deviceId}", true);
 
                 // HMTODO: Add a real Device here.
                 // HMTODO: use cancellation token.
@@ -151,7 +151,7 @@ namespace ActorBackendService
             throw new NotImplementedException();
         }
 
-        async Task<DeviceRenamedInfo> IDeviceActor.RenameFirstDeviceAsync()
+        async Task<DeviceRenamedInfo> IDeviceActor.RenameDeviceAsync(string deviceId, string newDeviceName)
         {
             DeviceErrorInfo devErrinfo = null;
             ErrorInfo errInfo = null;
@@ -163,26 +163,21 @@ namespace ActorBackendService
                 // HMTODO: use cancellation token.
                 Device deviceToRename = await this.StateManager.GetStateAsync<Device>(_stateName, CancellationToken.None);
 
-                deviceToRename.Name = "ChangedDeviceName";
+                deviceToRename.Name = newDeviceName;
 
                 devErrinfo = new DeviceErrorInfo(true, errInfo);
-                retVal = new DeviceRenamedInfo(deviceToRename.Id, devErrinfo);
+                retVal = new DeviceRenamedInfo(deviceToRename, devErrinfo);
 
                 return retVal;
             }
             catch (Exception)
             {
-                errInfo = new ErrorInfo("RenameFirstDeviceAsync Failed.");
+                errInfo = new ErrorInfo("RenameDeviceAsync Failed.");
                 devErrinfo = new DeviceErrorInfo(false, errInfo);
                 retVal = new DeviceRenamedInfo(null, devErrinfo);
 
                 return retVal;
             }
-        }
-
-        async Task<IDeviceRenamedInfo> IDeviceActor.RenameAsync(string deviceId, string newName)
-        {
-            throw new NotImplementedException();
         }
 
         async Task<IDeviceToggledActivationStatusInfo> IDeviceActor.ToggleActivationStatusAsync(string deviceId)

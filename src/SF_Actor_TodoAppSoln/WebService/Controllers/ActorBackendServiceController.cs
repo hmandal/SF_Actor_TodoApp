@@ -26,7 +26,7 @@ namespace WebService.Controllers
         private readonly FabricClient fabricClient;
         private readonly ConfigSettings configSettings;
         private readonly StatelessServiceContext serviceContext;
-        private static List<ActorId> actorIds = new List<ActorId>();
+        private static Dictionary<string, ActorId> deviceActorIdMap = new Dictionary<string, ActorId>();
 
         public ActorBackendServiceController(StatelessServiceContext serviceContext, ConfigSettings settings, FabricClient fabricClient)
         {
@@ -42,18 +42,24 @@ namespace WebService.Controllers
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
 
             List<IGetDeviceInfo> devices = new List<IGetDeviceInfo>();
-            foreach (ActorId actorId in actorIds)
+
+            // HMFLOW: Iterate through all the saved dict. of <ActorID, DeviceID>
+            foreach (var deviceActorIdPair in deviceActorIdMap)
             {
                 // This only creates a proxy object, it does not activate an actor or invoke any methods yet.
-                IDeviceActor deviceActor = ActorProxy.Create<IDeviceActor>(actorId, new Uri(serviceUri));
+                IDeviceActor deviceActor = ActorProxy.Create<IDeviceActor>(deviceActorIdPair.Value, new Uri(serviceUri));
 
                 // HMTODO: use interfaces instead of concrete classes.
                 // HMTODO: use real deviceId.
-                IGetDeviceInfo device = await deviceActor.GetAsync("stubDeviceId");
+                // HMTODO: [Improvement] Can't we query here GetAsync(<deviceId>) and then we can store several devices with one Actor.
+                // HMFLOW: The device is retrieved here.
+                IGetDeviceInfo device = await deviceActor.GetAsync();
 
                 devices.Add(device);
             }
 
+            // HMTODO: Implement similar wrappers for other endpoints too.
+            // HMFLOW: This is a wrapper to wrap all the returned devices.
             return this.Json(new DevicesViewModel() { DevicesInfo = devices });
         }
 
@@ -61,38 +67,55 @@ namespace WebService.Controllers
         [HttpPost("{id}")]
         public async Task<IActionResult> AddNewDeviceAsync(string id)
         {
-            string deviceActorId = id;
+            string deviceId = id;
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
 
-            ActorId devActorId = new ActorId(deviceActorId);
+            ActorId devActorId = ActorId.CreateRandom();
 
             // HMTODO: add proper comments.
-            actorIds.Add(devActorId);
-
             IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(devActorId, new Uri(serviceUri));
 
             await proxy.StartProcessingAsync(CancellationToken.None);
 
-            IDeviceAddedInfo deviceAddedInfo = await proxy.AddNewAsync();
+            // HMFLOW: Device gets added here, returns the Device details.
+            IDeviceAddedInfo deviceAddedInfo = await proxy.AddNewAsync(deviceId);
+
+            // save the DeviceId
+            // HMFLOW: save the DeviceId
+            deviceActorIdMap.Add(deviceAddedInfo.Device.Id, devActorId);
 
             return this.Json(deviceAddedInfo);
         }
 
         // POST api/actorbackendservice
         [HttpPost]
-        public async Task<IActionResult> RenameFirstDeviceAsync()
+        public async Task<IActionResult> RenameDeviceAsync([FromBody] RenameDeviceModel renameDeviceModel)
         {
+            string deviceId = renameDeviceModel.DeviceId;
+
             string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
 
-            ActorId devActorId = actorIds.FirstOrDefault();
+            ActorId devActorId = deviceActorIdMap[deviceId];
 
             IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(devActorId, new Uri(serviceUri));
 
             await proxy.StartProcessingAsync(CancellationToken.None);
 
-            IDeviceRenamedInfo deviceRenamedInfo = await proxy.RenameFirstDeviceAsync();
+            IDeviceRenamedInfo deviceRenamedInfo = await proxy.RenameDeviceAsync(deviceId, renameDeviceModel.NewDeviceName);
 
             return this.Json(deviceRenamedInfo);
+        }
+
+        [Serializable]
+        public class RenameDeviceModel
+        {
+            public string DeviceId { get; set; }
+            public string NewDeviceName { get; set; }
+
+            public RenameDeviceModel()
+            {
+
+            }
         }
 
         [HttpPost]

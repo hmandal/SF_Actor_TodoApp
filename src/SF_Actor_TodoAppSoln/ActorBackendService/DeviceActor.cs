@@ -125,7 +125,7 @@ namespace ActorBackendService
 
                 devErrinfo = new DeviceErrorInfo(true, errInfo);
 
-                retVal = new DeviceAddedInfo(deviceToAdd.Id, devErrinfo);
+                retVal = new DeviceAddedInfo(deviceToAdd, devErrinfo);
 
                 return retVal;
             }
@@ -135,7 +135,7 @@ namespace ActorBackendService
                 devErrinfo = new DeviceErrorInfo(false, errInfo);
 
                 // HMTODO: Replace this with a Representation of no device.
-                retVal = new DeviceAddedInfo(string.Empty, devErrinfo);
+                retVal = new DeviceAddedInfo(null, devErrinfo);
 
                 return retVal;
             }

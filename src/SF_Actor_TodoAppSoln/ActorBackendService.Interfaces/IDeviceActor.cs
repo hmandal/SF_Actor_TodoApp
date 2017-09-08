@@ -124,9 +124,9 @@ namespace ActorBackendService.Interfaces
         {
         }
 
-        public DeviceAddedInfo(string id, DeviceErrorInfo devErrInfo)
+        public DeviceAddedInfo(Device device, DeviceErrorInfo devErrInfo)
         {
-            Id = id;
+            Device = device;
             DevErrInfo = devErrInfo;
         }
     }

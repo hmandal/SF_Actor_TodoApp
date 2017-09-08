@@ -88,7 +88,7 @@ function stubFn() {
         }
     };
     start = new Date().getTime();
-    http.open("POST", "/api/ActorBackendService/StubEndpointAsync" + devActorId + "/?c=" + start);
+    http.open("POST", "/api/ActorBackendService/StubEndpointAsync/" + devActorId + "/?c=" + start);
     http.send();
 }
 

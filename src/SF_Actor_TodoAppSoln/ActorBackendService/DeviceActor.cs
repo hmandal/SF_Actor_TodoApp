@@ -146,12 +146,7 @@ namespace ActorBackendService
             return await Task.Run(() => { return "StubRetVal"; });
         }
 
-        async Task<IDeviceRemovedInfo> IDeviceActor.RemoveAsync(string deviceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        async Task<DeviceRenamedInfo> IDeviceActor.RenameDeviceAsync(string deviceId, string newDeviceName)
+        async Task<DeviceRenamedInfo> IDeviceActor.RenameAsync(string deviceId, string newDeviceName)
         {
             DeviceErrorInfo devErrinfo = null;
             ErrorInfo errInfo = null;
@@ -161,6 +156,7 @@ namespace ActorBackendService
             {
                 // HMTODO: Get a real Device here.
                 // HMTODO: use cancellation token.
+                // HMTODO: Replace all normal operations with their Try counterparts.
                 Device deviceToRename = await this.StateManager.GetStateAsync<Device>(_stateName, CancellationToken.None);
 
                 deviceToRename.Name = newDeviceName;
@@ -175,6 +171,33 @@ namespace ActorBackendService
                 errInfo = new ErrorInfo("RenameDeviceAsync Failed.");
                 devErrinfo = new DeviceErrorInfo(false, errInfo);
                 retVal = new DeviceRenamedInfo(null, devErrinfo);
+
+                return retVal;
+            }
+        }
+
+        async Task<DeviceRemovedInfo> IDeviceActor.RemoveAsync(string deviceId)
+        {
+            DeviceErrorInfo devErrinfo = null;
+            ErrorInfo errInfo = null;
+            DeviceRemovedInfo retVal = null;
+
+            try
+            {
+                // HMTODO: Get a real Device here.
+                // HMTODO: use cancellation token.
+                bool isDeviceRemovalSuccess = await this.StateManager.TryRemoveStateAsync(_stateName, CancellationToken.None);
+
+                devErrinfo = new DeviceErrorInfo(true, errInfo);
+                retVal = new DeviceRemovedInfo(isDeviceRemovalSuccess);
+
+                return retVal;
+            }
+            catch (Exception)
+            {
+                errInfo = new ErrorInfo("RemoveDeviceAsync Failed.");
+                devErrinfo = new DeviceErrorInfo(false, errInfo);
+                retVal = new DeviceRemovedInfo(false);
 
                 return retVal;
             }

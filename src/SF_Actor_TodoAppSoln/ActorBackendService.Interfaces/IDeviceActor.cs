@@ -20,8 +20,8 @@ namespace ActorBackendService.Interfaces
     {
         Task<GetDeviceInfo> GetAsync();
         Task<DeviceAddedInfo> AddNewAsync(string deviceId);
-        Task<IDeviceRemovedInfo> RemoveAsync(string deviceId);
-        Task<DeviceRenamedInfo> RenameDeviceAsync(string deviceId, string newDeviceName);
+        Task<DeviceRenamedInfo> RenameAsync(string deviceId, string newDeviceName);
+        Task<DeviceRemovedInfo> RemoveAsync(string deviceId);
         Task<IDeviceToggledActivationStatusInfo> ToggleActivationStatusAsync(string deviceId);
         Task<string> StubActionAsync();
         Task StartProcessingAsync(CancellationToken none);
@@ -97,13 +97,17 @@ namespace ActorBackendService.Interfaces
 
     public interface IDeviceRemovedInfo : IDeviceInfoResult
     {
+        bool IsSuccess { get; set; }
+        DeviceErrorInfo DevErrInfo { get; set; }
     }
 
     public interface IDeviceRenamedInfo : IDeviceInfoResult
     {
+        // HMTODO: Return only the success state, NOT the whole device.
         Device Device { get; set; }
-        DeviceErrorInfo DevErrInfo { get; set; }
 
+        // HMTODO: move DevErrInfo to IDeviceInfoResult
+        DeviceErrorInfo DevErrInfo { get; set; }
     }
 
     public interface IDeviceToggledActivationStatusInfo : IDeviceInfoResult
@@ -130,17 +134,21 @@ namespace ActorBackendService.Interfaces
         }
     }
 
+    [DataContract]
     public class DeviceRemovedInfo: IDeviceRemovedInfo
     {
-        public string Id { get; set; }
+        [DataMember]
+        public bool IsSuccess { get; set; }
+        [DataMember]
+        public DeviceErrorInfo DevErrInfo { get; set; }
 
         public DeviceRemovedInfo()
         {
         }
 
-        public DeviceRemovedInfo(string id)
+        public DeviceRemovedInfo(bool isSuccess)
         {
-            Id = id;
+            IsSuccess = isSuccess;
         }
     }
 

@@ -101,9 +101,35 @@ namespace WebService.Controllers
 
             await proxy.StartProcessingAsync(CancellationToken.None);
 
-            IDeviceRenamedInfo deviceRenamedInfo = await proxy.RenameDeviceAsync(deviceId, renameDeviceModel.NewDeviceName);
+            IDeviceRenamedInfo deviceRenamedInfo = await proxy.RenameAsync(deviceId, renameDeviceModel.NewDeviceName);
 
             return this.Json(deviceRenamedInfo);
+        }
+
+        // POST api/actorbackendservice
+        [HttpPost]
+        public async Task<IActionResult> RemoveDeviceAsync([FromBody] RemoveDeviceModel removeDeviceModel)
+        {
+            string deviceId = removeDeviceModel.DeviceId;
+
+            string serviceUri = this.serviceContext.CodePackageActivationContext.ApplicationName + "/" + this.configSettings.ActorBackendServiceName;
+
+            // HMTODO: check for deviceId absent.
+            ActorId devActorId = deviceActorIdMap[deviceId];
+
+            IDeviceActor proxy = ActorProxy.Create<IDeviceActor>(devActorId, new Uri(serviceUri));
+
+            await proxy.StartProcessingAsync(CancellationToken.None);
+
+            IDeviceRemovedInfo deviceRemovedInfo = await proxy.RemoveAsync(deviceId);
+
+            // Remove the Actor entry from Actor-DeviceId dictionary.
+            if (deviceRemovedInfo.IsSuccess)
+            {
+                deviceActorIdMap.Remove(deviceId);
+            }
+
+            return this.Json(deviceRemovedInfo);
         }
 
         [Serializable]
@@ -113,6 +139,17 @@ namespace WebService.Controllers
             public string NewDeviceName { get; set; }
 
             public RenameDeviceModel()
+            {
+
+            }
+        }
+
+        [Serializable]
+        public class RemoveDeviceModel
+        {
+            public string DeviceId { get; set; }
+
+            public RemoveDeviceModel()
             {
 
             }
